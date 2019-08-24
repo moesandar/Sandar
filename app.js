@@ -5,8 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose=require('mongoose');
 var session=require('express-session');
-
-
+var apiuser=require('./api/routes/users');
+var apipost=require('./api/routes/posts');
+var apiadmin=require('./api/routes/admin');
 var indexRouter = require('./routes/index');
 
 var usersRouter = require('./routes/users');
@@ -31,16 +32,21 @@ resave:false,
 saveUninitialized:true
 
 }));
+
 app.use(function(req,res,next){
   res.locals.user=req.session.user;
   next();
 })
+app.use('/api/posts',apipost);
+app.use('/api/users',apiuser);
+app.use('/api/',apiadmin);
 app.use('/', indexRouter);
 app.use(function(req,res,next){
   if(req.session.user){
     next();
   }
-  else{res.redirect('/signin');
+  else{
+    res.redirect('/signin');
 }
 });
 app.use('/users', usersRouter);
